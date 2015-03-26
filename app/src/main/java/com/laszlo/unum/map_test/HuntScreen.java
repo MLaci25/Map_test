@@ -1,12 +1,15 @@
 package com.laszlo.unum.map_test;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -24,39 +27,59 @@ public class HuntScreen extends Activity
 {
     //AQuery object
     AQuery aq;
-    //listCtrl Object
-    Button buttonCtrl;
+    //list Object
+    Button button;
     //list Spinner Ctrl Object
-    Spinner listCtrl;
-    //Progress bar Object
+    ListView list;
+
     ProgressBar  newProgressBar;
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_hunt);
         //Instantiate AQuery Object
 
         aq = new AQuery(this);
 
-        //button.setOnClickListener();
+        button = (Button) findViewById(R.id.button);
+        list = (ListView) findViewById(R.id.listView);
+        list.setClickable(false);
 
-        buttonCtrl = (Button) findViewById(R.id.button);
-        listCtrl = (Spinner) findViewById(R.id.spinner);
         newProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         newProgressBar.setVisibility(View.GONE);
 
-        buttonCtrl.setOnClickListener(new View.OnClickListener()
-        {
+        //set listener on button
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                //startActivity(new Intent(TestGet.this, MapsActivity.class));
+            public void onClick(View v) {
+
                 select("select");
                 newProgressBar.setVisibility(View.VISIBLE);
+                //startActivity(new Intent(TestGet.this, MapsActivity.class));
             }
         });
-    }
+
+        //set listener on listview
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Context context = getApplicationContext();
+                CharSequence text = "Clicked";
+                int duration = Toast.LENGTH_SHORT;
+
+                Toast toast = Toast.makeText(context,text,duration);
+                toast.show();
+            }
+        });
+
+
+    }//ENDOFONCREATE
+
+
     public void select(String options)
     {
         //JSON URL
@@ -88,10 +111,12 @@ public class HuntScreen extends Activity
             {
                 Toast.makeText(aq.getContext(), "Cannot convert into Java Array", Toast.LENGTH_LONG).show();
             }
-            //Set City adapter with created Java array 'values'
+            //Set list adapter with created Java array 'values'
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     getApplicationContext(),android.R.layout.simple_dropdown_item_1line, values);
-            listCtrl.setAdapter(adapter);
+            list.setAdapter(adapter);
+
+
         }
         //When JSON is null
         else
@@ -109,7 +134,7 @@ public class HuntScreen extends Activity
             //When response code is other than 500 or 404
             else
             {
-                Toast.makeText(aq.getContext(),"Unknown Error occured!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(aq.getContext(),"Active connection required",Toast.LENGTH_SHORT).show();
             }
         }
 
