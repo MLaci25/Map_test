@@ -36,6 +36,9 @@
         <activity android:name=".HuntScreen"
             android:label="Map" >
         </activity>
+        <activity android:name=".TestGet"
+            android:label="Map" >
+        </activity>
         <activity android:name=".MapsActivity"
             android:label="Map" >
         </activity>

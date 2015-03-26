@@ -1,8 +1,10 @@
 package com.laszlo.unum.map_test;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -20,7 +22,7 @@ import org.json.JSONObject;
 /**
  * Created by Laszlo on 25/03/2015.
  */
-public class HuntScreen extends Activity
+public class TestGet extends Activity
 {
     //AQuery object
     AQuery aq;
@@ -31,8 +33,7 @@ public class HuntScreen extends Activity
     //Progress bar Object
     ProgressBar  newProgressBar;
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hunt);
         //Instantiate AQuery Object
@@ -46,17 +47,37 @@ public class HuntScreen extends Activity
         newProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         newProgressBar.setVisibility(View.GONE);
 
-        buttonCtrl.setOnClickListener(new View.OnClickListener()
-        {
+        buttonCtrl.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 //startActivity(new Intent(TestGet.this, MapsActivity.class));
                 select("select");
                 newProgressBar.setVisibility(View.VISIBLE);
             }
         });
     }
+
+        public void callMap()
+        {
+            listCtrl.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+            {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+                {
+                    startActivity(new Intent(TestGet.this, MapsActivity.class));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent)
+                {
+
+                }
+            });
+
+        }
+
+
+
     public void select(String options)
     {
         //JSON URL
@@ -92,6 +113,8 @@ public class HuntScreen extends Activity
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                     getApplicationContext(),android.R.layout.simple_dropdown_item_1line, values);
             listCtrl.setAdapter(adapter);
+            callMap();
+
         }
         //When JSON is null
         else
