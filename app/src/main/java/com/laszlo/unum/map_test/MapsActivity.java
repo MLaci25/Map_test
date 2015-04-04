@@ -14,6 +14,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -59,6 +60,12 @@ public class MapsActivity extends FragmentActivity implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(1 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval((long) (0.01 * 1000)); // 1 second, in milliseconds
+
+
+        CameraUpdate pointTo = CameraUpdateFactory.newLatLng(new LatLng(52.83658,-6.923585));
+        mMap.moveCamera(pointTo);
+        mMap.animateCamera(pointTo);
+
     }
 
     @Override
@@ -73,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements
         int duration = Toast.LENGTH_SHORT;
 
         Toast toast = Toast.makeText(context,text,duration);
-        toast.show();
+        //toast.show();
     }
 
     @Override
@@ -92,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements
         int duration = Toast.LENGTH_SHORT;
 
         Toast toast = Toast.makeText(context,text,duration);
-        toast.show();
+        //toast.show();
     }
 
     /**
@@ -121,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements
             int duration = Toast.LENGTH_LONG;
 
             Toast toast = Toast.makeText(context,text,duration);
-            toast.show();
+            //toast.show();
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
@@ -159,8 +166,14 @@ public class MapsActivity extends FragmentActivity implements
                 .position(latLng)
                 .title(marker);
         mMap.addMarker(options);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+        CameraUpdate newLocation = CameraUpdateFactory.newLatLng(new LatLng(currentLatitude,currentLongitude));
+        mMap.moveCamera(newLocation);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(12.0f));
+
+
+        //CameraUpdate pointTo = CameraUpdateFactory.newLatLng(new LatLng(52.83658,-6.923585));
+        //mMap.moveCamera(pointTo);
+        //mMap.animateCamera(pointTo);
 
         Context context = getApplicationContext();
         CharSequence text = "Toast Working";
@@ -181,7 +194,7 @@ public class MapsActivity extends FragmentActivity implements
 
             int duration = Toast.LENGTH_LONG;
             Toast toast = Toast.makeText(context,text,duration);
-            toast.show();
+            //toast.show();
 
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
@@ -237,7 +250,7 @@ public class MapsActivity extends FragmentActivity implements
             int duration = Toast.LENGTH_LONG;
 
             Toast toast = Toast.makeText(context,text,duration);
-            toast.show();
+            //toast.show();
         }
     }
 

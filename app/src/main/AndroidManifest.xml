@@ -27,20 +27,23 @@
 
         <activity
             android:name=".SplashScreen"
-            android:label="Map" >
+            android:label="Follow The Clues..." >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".HuntScreen"
-            android:label="Map" >
+            android:label="Follow The Clues..." >
+        </activity>
+        <activity android:name=".LoginScreen"
+            android:label="Follow The Clues..." >
         </activity>
         <activity android:name=".TestGet"
-            android:label="Map" >
-        </activity>
+            android:label="Follow The Clues..." >
+    </activity>
         <activity android:name=".MapsActivity"
-            android:label="Map" >
+            android:label="Follow The Clues..." >
         </activity>
 
     </application>

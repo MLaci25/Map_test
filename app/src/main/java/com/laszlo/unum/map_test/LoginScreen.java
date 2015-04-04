@@ -6,11 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -22,74 +20,79 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Laszlo on 25/03/2015.
+ * Created by Laszlo on 04/04/2015.
  */
-public class HuntScreen extends Activity
+public class LoginScreen extends Activity
 {
     //AQuery object
     AQuery aq;
     //list Object
-    Button button;
-    //list Spinner Ctrl Object
-    ListView list;
+    Button bClear;
+    Button bSubmit;
+    EditText nameText;
+    EditText pwText;
+    String selected;
 
-    ProgressBar  newProgressBar;
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+
+
+
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_hunt);
-        //Instantiate AQuery Object
+        setContentView(R.layout.activity_login);
 
         aq = new AQuery(this);
 
-        button = (Button) findViewById(R.id.button);
-        list = (ListView) findViewById(R.id.listView);
-        list.setClickable(false);
+        bClear = (Button)findViewById(R.id.clear);
+        bSubmit =(Button)findViewById(R.id.submit);
+        nameText = (EditText)findViewById(R.id.editName);
+        pwText = (EditText)findViewById(R.id.editPassword);
 
-        newProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        newProgressBar.setVisibility(View.GONE);
+        nameText.setText("Username");
+        pwText.setText("Password");
 
-        //set listener on button
-        button.setOnClickListener(new View.OnClickListener() {
+        bClear.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-
-                select("select");
-                newProgressBar.setVisibility(View.VISIBLE);
-                //startActivity(new Intent(TestGet.this, MapsActivity.class));
+            public void onClick(View v)
+            {
+                nameText.setText("");
+                pwText.setText("");
             }
         });
 
-        //set listener on listview
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        bSubmit.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void onClick(View v)
             {
                 Context context = getApplicationContext();
-                CharSequence text = "Clicked";
+                CharSequence text = "Submit Clicked";
                 int duration = Toast.LENGTH_SHORT;
 
                 Toast toast = Toast.makeText(context,text,duration);
                 //toast.show();
-                startActivity(new Intent(HuntScreen.this, MapsActivity.class));
+
+                selected = nameText.getText().toString();
+                login(selected);
+
             }
         });
 
 
     }//ENDOFONCREATE
 
-
-    public void select(String hunt)
+    public void login(String user)
     {
         //JSON URL
-        String url = "http://laszlo-malina.com/App/downloadHunt.php?hunt="+ hunt;
+        String url = "http://laszlo-malina.com/App/login.php?user="+ user;
         //Make Asynchronous call using AJAX method
-        aq.progress(newProgressBar).ajax(url, JSONObject.class, this,"jsonCallback");
+        aq.ajax(url, JSONObject.class, this, "userCallback");
     }
-    public void jsonCallback(String url, JSONObject json, AjaxStatus status)
+
+    public void userCallback(String url, JSONObject json, AjaxStatus status)
     {
         //When JSON is not null
         if (json != null)
@@ -103,26 +106,28 @@ public class HuntScreen extends Activity
                 String jsonResponse = json.getJSONArray("List").toString();
                 //Using fromJson method deserialize JSON response [Convert JSON array into Java array]
                 values = gson.fromJson(jsonResponse, String[].class);
+
+                int size = values.length;
+                Toast.makeText(aq.getContext(),"User has authorized access", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(LoginScreen.this, HuntScreen.class));
+
             }
             catch (JSONException e)
             {
                 // TODO Auto-generated catch block
-                Toast.makeText(aq.getContext(), "Error in parsing JSON", Toast.LENGTH_LONG).show();
+                Toast.makeText(aq.getContext(), "Invalid or Unregistered User", Toast.LENGTH_LONG).show();
+
             }
             catch (Exception e)
             {
                 Toast.makeText(aq.getContext(), "Cannot convert into Java Array", Toast.LENGTH_LONG).show();
             }
-            //Set list adapter with created Java array 'values'
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    getApplicationContext(),android.R.layout.simple_dropdown_item_1line, values);
-            list.setAdapter(adapter);
-
 
         }
         //When JSON is null
         else
         {
+            /*
             //When response code is 500 (Internal Server Error)
             if(status.getCode() == 500)
             {
@@ -137,8 +142,7 @@ public class HuntScreen extends Activity
             else
             {
                 Toast.makeText(aq.getContext(),"Active connection required",Toast.LENGTH_SHORT).show();
-            }
+            }*/
         }
-
     }
 }

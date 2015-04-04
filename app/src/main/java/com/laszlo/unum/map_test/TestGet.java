@@ -2,6 +2,7 @@ package com.laszlo.unum.map_test;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -72,7 +73,8 @@ public class TestGet extends Activity
                 int duration = Toast.LENGTH_SHORT;
 
                 Toast toast = Toast.makeText(context,text,duration);
-                toast.show();
+                //toast.show();
+                startActivity(new Intent(TestGet.this, MapsActivity.class));
             }
         });
 
@@ -80,10 +82,10 @@ public class TestGet extends Activity
     }//ENDOFONCREATE
 
 
-    public void select(String options)
+    public void select(String hunt)
     {
         //JSON URL
-        String url = "http://laszlo-malina.com/App/downloadHunt.php?options="+ options;
+        String url = "http://laszlo-malina.com/App/downloadHunt.php?hunt="+ hunt;
         //Make Asynchronous call using AJAX method
         aq.progress(newProgressBar).ajax(url, JSONObject.class, this,"jsonCallback");
     }
