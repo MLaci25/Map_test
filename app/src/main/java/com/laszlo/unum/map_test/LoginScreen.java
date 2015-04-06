@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,13 +25,13 @@ public class LoginScreen extends Activity
 {
     //AQuery object
     AQuery aq;
-    //list Object
+
     Button bClear;
     Button bSubmit;
     EditText nameText;
     EditText pwText;
-    String selected;
-
+    String user;
+    String pass;
 
 
 
@@ -75,8 +74,9 @@ public class LoginScreen extends Activity
                 Toast toast = Toast.makeText(context,text,duration);
                 //toast.show();
 
-                selected = nameText.getText().toString();
-                login(selected);
+                user = nameText.getText().toString();
+                pass = pwText.getText().toString();
+                login(user,pass);
 
             }
         });
@@ -84,10 +84,10 @@ public class LoginScreen extends Activity
 
     }//ENDOFONCREATE
 
-    public void login(String user)
+    public void login(String user,String pass)
     {
         //JSON URL
-        String url = "http://laszlo-malina.com/App/login.php?user="+ user;
+        String url = "http://laszlo-malina.com/App/login.php?user="+ user + "&pass=" + pass ;
         //Make Asynchronous call using AJAX method
         aq.ajax(url, JSONObject.class, this, "userCallback");
     }
@@ -108,14 +108,14 @@ public class LoginScreen extends Activity
                 values = gson.fromJson(jsonResponse, String[].class);
 
                 int size = values.length;
-                Toast.makeText(aq.getContext(),"User has authorized access", Toast.LENGTH_LONG).show();
+                //Toast.makeText(aq.getContext(),"User has authorized access", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(LoginScreen.this, HuntScreen.class));
 
             }
             catch (JSONException e)
             {
                 // TODO Auto-generated catch block
-                Toast.makeText(aq.getContext(), "Invalid or Unregistered User", Toast.LENGTH_LONG).show();
+                Toast.makeText(aq.getContext(), "Invalid or missing user details", Toast.LENGTH_LONG).show();
 
             }
             catch (Exception e)

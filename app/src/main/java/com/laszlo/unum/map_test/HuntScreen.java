@@ -58,85 +58,81 @@ public class HuntScreen extends Activity
 
                 select("select");
                 newProgressBar.setVisibility(View.VISIBLE);
-                //startActivity(new Intent(TestGet.this, MapsActivity.class));
-            }
-        });
-
-        //set listener on listview
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                Context context = getApplicationContext();
-                CharSequence text = "Clicked";
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context,text,duration);
-                //toast.show();
-                startActivity(new Intent(HuntScreen.this, MapsActivity.class));
             }
         });
 
 
     }//ENDOFONCREATE
 
-
     public void select(String hunt)
     {
         //JSON URL
         String url = "http://laszlo-malina.com/App/downloadHunt.php?hunt="+ hunt;
         //Make Asynchronous call using AJAX method
-        aq.progress(newProgressBar).ajax(url, JSONObject.class, this,"jsonCallback");
+        aq.progress(newProgressBar).ajax(url, JSONObject.class, this, "jsonCallback");
     }
-    public void jsonCallback(String url, JSONObject json, AjaxStatus status)
-    {
+
+    public void jsonCallback(String url, JSONObject json, AjaxStatus status) {
+
         //When JSON is not null
         if (json != null)
         {
-            String[] values = null;
+           String[] values = null;
             //Create GSON object
             Gson gson = new GsonBuilder().create();
-            try
-            {
+            try {
                 //Get JSON response by converting JSONArray into String
                 String jsonResponse = json.getJSONArray("List").toString();
                 //Using fromJson method deserialize JSON response [Convert JSON array into Java array]
                 values = gson.fromJson(jsonResponse, String[].class);
-            }
-            catch (JSONException e)
-            {
+            } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 Toast.makeText(aq.getContext(), "Error in parsing JSON", Toast.LENGTH_LONG).show();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Toast.makeText(aq.getContext(), "Cannot convert into Java Array", Toast.LENGTH_LONG).show();
             }
             //Set list adapter with created Java array 'values'
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    getApplicationContext(),android.R.layout.simple_dropdown_item_1line, values);
+                    getApplicationContext(), android.R.layout.simple_dropdown_item_1line, values);
             list.setAdapter(adapter);
 
+            //store array values into new final array
+            final String[] newValues = values;
+            //store choosen value of array and store in new array
+
+
+            //set listener on list
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                {
+
+                    String five = newValues[position];
+
+                    //Toast.makeText(getApplicationContext(), newValues[position] + " is chosen", Toast.LENGTH_LONG).show();
+
+                    Intent myIntent = new Intent(HuntScreen.this, MapsActivity.class);
+                    //sending extra stuff to the next class
+                    myIntent.putExtra("hunt",five);
+                    startActivity(myIntent);
+                }
+            });
 
         }
         //When JSON is null
-        else
-        {
+        else {
             //When response code is 500 (Internal Server Error)
-            if(status.getCode() == 500)
-            {
-                Toast.makeText(aq.getContext(),"There is an error in your php file!",Toast.LENGTH_SHORT).show();
+            if (status.getCode() == 500) {
+                Toast.makeText(aq.getContext(), "There is an error in your php file!", Toast.LENGTH_SHORT).show();
             }
             //When response code is 404 (Not found)
-            else if(status.getCode() == 404)
-            {
-                Toast.makeText(aq.getContext(),"Cannot read the php file!",Toast.LENGTH_SHORT).show();
+            else if (status.getCode() == 404) {
+                Toast.makeText(aq.getContext(), "Cannot read the php file!", Toast.LENGTH_SHORT).show();
             }
             //When response code is other than 500 or 404
-            else
-            {
-                Toast.makeText(aq.getContext(),"Active connection required",Toast.LENGTH_SHORT).show();
+            else {
+                Toast.makeText(aq.getContext(), "Active connection required", Toast.LENGTH_SHORT).show();
             }
         }
 

@@ -45,7 +45,7 @@ public class MapsActivity extends FragmentActivity implements
     {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
@@ -74,13 +74,6 @@ public class MapsActivity extends FragmentActivity implements
         super.onResume();
         setUpMapIfNeeded();
         mGoogleApiClient.connect();
-
-        Context context = getApplicationContext();
-        CharSequence text = "Follow The Clues... Resumed";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context,text,duration);
-        //toast.show();
     }
 
     @Override
@@ -94,29 +87,8 @@ public class MapsActivity extends FragmentActivity implements
             mGoogleApiClient.disconnect();
         }
 
-        Context context = getApplicationContext();
-        CharSequence text = "Follow The Clues... Paused";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context,text,duration);
-        //toast.show();
     }
 
-    /**
-     * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
-     * installed) and the map has not already been instantiated.. This will ensure that we only ever
-     * call {@link #setUpMap()} once when {@link #mMap} is not null.
-     * <p/>
-     * If it isn't installed {@link SupportMapFragment} (and
-     * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
-     * install/update the Google Play services APK on their device.
-     * <p/>
-     * A user can return to this FragmentActivity after following the prompt and correctly
-     * installing/updating/enabling the Google Play services. Since the FragmentActivity may not
-     * have been completely destroyed during this process (it is likely that it would only be
-     * stopped or paused), {@link #onCreate(Bundle)} may not be called again so we should call this
-     * method in {@link #onResume()} to guarantee that it will be called.
-     */
     private void setUpMapIfNeeded()
 
     {
@@ -158,9 +130,13 @@ public class MapsActivity extends FragmentActivity implements
         double currentLatitude = location.getLatitude();
         double currentLongitude = location.getLongitude();
 
+        String x = getIntent().getExtras().getString("hunt");
+        //Toast.makeText(getApplicationContext(), x + " is chosen", Toast.LENGTH_LONG).show();
+
+
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
-        String marker = "Current Location";
+        String marker = "Clue: " +  x;
 
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
@@ -168,19 +144,8 @@ public class MapsActivity extends FragmentActivity implements
         mMap.addMarker(options);
         CameraUpdate newLocation = CameraUpdateFactory.newLatLng(new LatLng(currentLatitude,currentLongitude));
         mMap.moveCamera(newLocation);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(12.0f));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13.0f));
 
-
-        //CameraUpdate pointTo = CameraUpdateFactory.newLatLng(new LatLng(52.83658,-6.923585));
-        //mMap.moveCamera(pointTo);
-        //mMap.animateCamera(pointTo);
-
-        Context context = getApplicationContext();
-        CharSequence text = "Toast Working";
-        int duration = Toast.LENGTH_LONG;
-
-        Toast toast = Toast.makeText(context,text,duration);
-        //toast.show();
     }
 
     @Override
