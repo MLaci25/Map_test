@@ -33,19 +33,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HuntScreen"
+        <activity android:name=".DetailsScreen"
             android:label="Follow The Clues..." >
         </activity>
         <activity android:name=".LoginScreen"
             android:label="Follow The Clues..." >
         </activity>
-        <activity android:name=".TestGet"
+        <activity android:name=".HuntScreen"
             android:label="Follow The Clues..." >
-    </activity>
+        </activity>
         <activity android:name=".MapsActivity"
             android:label="Follow The Clues..." >
         </activity>
-
     </application>
 
 </manifest>

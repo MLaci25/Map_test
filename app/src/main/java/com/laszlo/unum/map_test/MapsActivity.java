@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -40,6 +44,9 @@ public class MapsActivity extends FragmentActivity implements
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
+    EditText getAnswer;
+    Button checkAnswer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -65,6 +72,7 @@ public class MapsActivity extends FragmentActivity implements
         CameraUpdate pointTo = CameraUpdateFactory.newLatLng(new LatLng(52.83658,-6.923585));
         mMap.moveCamera(pointTo);
         mMap.animateCamera(pointTo);
+
 
     }
 
@@ -130,21 +138,51 @@ public class MapsActivity extends FragmentActivity implements
         double currentLatitude = location.getLatitude();
         double currentLongitude = location.getLongitude();
 
-        String x = getIntent().getExtras().getString("hunt");
-        //Toast.makeText(getApplicationContext(), x + " is chosen", Toast.LENGTH_LONG).show();
+        String clue = getIntent().getExtras().getString("clue");
 
+        String lat = getIntent().getExtras().getString("lati");
+        double newLatitude = Double.parseDouble(lat);
+        String lng = getIntent().getExtras().getString("longi");
+        double newLongitude = Double.parseDouble(lng);
 
-        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
+        getAnswer = (EditText)findViewById(R.id.editText);
+        checkAnswer = (Button)findViewById(R.id.button2);
 
-        String marker = "Clue: " +  x;
+        checkAnswer.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                String correct = getAnswer.getText().toString();
+                String answer = getIntent().getExtras().getString("ans");
+
+                if (correct.equals(answer))
+                {
+                    Toast.makeText(getApplicationContext(), "The answer is correct!!", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Wrong Answer!!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        //Toast.makeText(getApplicationContext(), newLatitude + " is lat", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), newLongitude + " is lng", Toast.LENGTH_SHORT).show();
+
+        String hint = getIntent().getExtras().getString("hint");
+
+        LatLng latLng = new LatLng(newLatitude, newLongitude);
+
+        String marker = "Clue: " +  clue;
 
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(marker);
         mMap.addMarker(options);
-        CameraUpdate newLocation = CameraUpdateFactory.newLatLng(new LatLng(currentLatitude,currentLongitude));
+        CameraUpdate newLocation = CameraUpdateFactory.newLatLng(new LatLng(newLatitude,newLongitude));
         mMap.moveCamera(newLocation);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13.0f));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13.5f));
 
     }
 
@@ -152,14 +190,15 @@ public class MapsActivity extends FragmentActivity implements
     public void onConnected(Bundle bundle)
     {
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
         if (location == null)
         {
             Context context = getApplicationContext();
-            CharSequence text = "Cannot get current location!";
+            CharSequence text = "Loading,Loading!!";
 
             int duration = Toast.LENGTH_LONG;
             Toast toast = Toast.makeText(context,text,duration);
-            //toast.show();
+            toast.show();
 
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
@@ -172,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     public void onConnectionSuspended(int i)
     {
-        Log.i(TAG,"Connection Suspended");
+        Log.i(TAG, "Connection Suspended");
 
     }
 

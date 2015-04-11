@@ -35,7 +35,8 @@ public class HuntScreen extends Activity
 
     ProgressBar  newProgressBar;
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -54,38 +55,40 @@ public class HuntScreen extends Activity
         //set listener on button
         button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
 
-                select("select");
+                getHunt("select");
                 newProgressBar.setVisibility(View.VISIBLE);
             }
         });
 
-
     }//ENDOFONCREATE
 
-    public void select(String hunt)
+    public void getHunt(String hunt)
     {
         //JSON URL
         String url = "http://laszlo-malina.com/App/downloadHunt.php?hunt="+ hunt;
         //Make Asynchronous call using AJAX method
-        aq.progress(newProgressBar).ajax(url, JSONObject.class, this, "jsonCallback");
+        aq.progress(newProgressBar).ajax(url, JSONObject.class, this, "jsonCallBack");
     }
-
-    public void jsonCallback(String url, JSONObject json, AjaxStatus status) {
-
+    public void jsonCallBack(String url, JSONObject json, AjaxStatus status)
+    {
         //When JSON is not null
         if (json != null)
         {
            String[] values = null;
             //Create GSON object
             Gson gson = new GsonBuilder().create();
-            try {
+            try
+            {
                 //Get JSON response by converting JSONArray into String
                 String jsonResponse = json.getJSONArray("List").toString();
                 //Using fromJson method deserialize JSON response [Convert JSON array into Java array]
                 values = gson.fromJson(jsonResponse, String[].class);
-            } catch (JSONException e) {
+            }
+            catch (JSONException e)
+            {
                 // TODO Auto-generated catch block
                 Toast.makeText(aq.getContext(), "Error in parsing JSON", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
@@ -98,8 +101,6 @@ public class HuntScreen extends Activity
 
             //store array values into new final array
             final String[] newValues = values;
-            //store choosen value of array and store in new array
-
 
             //set listener on list
             list.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -108,33 +109,114 @@ public class HuntScreen extends Activity
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                 {
 
-                    String five = newValues[position];
+                    String name = newValues[position];
 
-                    //Toast.makeText(getApplicationContext(), newValues[position] + " is chosen", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), name + " is chosen", Toast.LENGTH_LONG).show();
 
-                    Intent myIntent = new Intent(HuntScreen.this, MapsActivity.class);
+                    //Intent myIntent = new Intent(HuntScreen.this, MapsActivity.class);
                     //sending extra stuff to the next class
-                    myIntent.putExtra("hunt",five);
-                    startActivity(myIntent);
+                    //myIntent.putExtra("hunt",name);
+
+                    displayHunt(name);
+                    /*Get details for each clue
+                    then use them in the next actvity
+                    to display on/with marker
+                    */
+                    //startActivity(myIntent);
                 }
             });
 
         }
         //When JSON is null
-        else {
+        else
+        {
             //When response code is 500 (Internal Server Error)
             if (status.getCode() == 500) {
-                Toast.makeText(aq.getContext(), "There is an error in your php file!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(aq.getContext(), "Status Error: 500", Toast.LENGTH_SHORT).show();
             }
             //When response code is 404 (Not found)
             else if (status.getCode() == 404) {
-                Toast.makeText(aq.getContext(), "Cannot read the php file!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(aq.getContext(), "Status Error: 404", Toast.LENGTH_SHORT).show();
             }
             //When response code is other than 500 or 404
             else {
-                Toast.makeText(aq.getContext(), "Active connection required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(aq.getContext(), "Connection required", Toast.LENGTH_SHORT).show();
             }
         }
 
+    }
+    public void displayHunt(String hunt)
+    {
+        String url = "http://laszlo-malina.com/App/displayHunt.php?hunt="+ hunt;
+        aq.ajax(url, JSONObject.class, this, "huntCallback");
+        //Toast.makeText(aq.getContext(), hunt + " was passed", Toast.LENGTH_SHORT).show();
+    }
+    public void huntCallback(String url, JSONObject json, AjaxStatus status)
+    {
+
+        //When JSON is not null
+        if (json != null)
+        {
+            String[] info = null;
+
+            //Create GSON object
+            Gson gson = new GsonBuilder().create();
+            try
+            {
+                //Get JSON response by converting JSONArray into String
+                String jsonResponse = json.getJSONArray("Info").toString();
+
+                //Using fromJson method deserialize JSON response [Convert JSON array into Java array]
+                info = gson.fromJson(jsonResponse, String[].class);
+
+
+                    //Toast.makeText(aq.getContext(), "Data: " + info[i] + " at index " + i, Toast.LENGTH_SHORT).show();
+                String iClue = info[0];
+                String iAnswer = info[1] ;
+                String iLat = info[2];
+                String iLng = info[3];
+                String iHint = info[4];
+
+                //Toast.makeText(aq.getContext(), iClue, Toast.LENGTH_SHORT).show();
+
+                Intent myIntent = new Intent(HuntScreen.this, MapsActivity.class);
+                //sending extra stuff to the next class
+                myIntent.putExtra("clue",iClue);
+                myIntent.putExtra("ans",iAnswer);
+                myIntent.putExtra("lati",iLat);
+                myIntent.putExtra("longi",iLng);
+                myIntent.putExtra("hint",iHint);
+
+                startActivity(myIntent);
+            }
+            catch (JSONException e)
+            {
+                // TODO Auto-generated catch block
+                Toast.makeText(aq.getContext(), "Error in parsing JSON", Toast.LENGTH_LONG).show();
+            }
+            catch (Exception e)
+            {
+                Toast.makeText(aq.getContext(), "Cannot convert Array", Toast.LENGTH_LONG).show();
+            }
+        }
+        //When JSON is null
+        else
+        {
+            //When response code is 500 (Internal Server Error)
+            if (status.getCode() == 500)
+            {
+                Toast.makeText(aq.getContext(), "Error in file!", Toast.LENGTH_SHORT).show();
+            }
+            //When response code is 404 (Not found)
+            else if (status.getCode() == 404)
+            {
+                Toast.makeText(aq.getContext(), "Cannot read  file!", Toast.LENGTH_SHORT).show();
+            }
+            //When response code is other than 500 or 404
+            else
+            {
+                Toast.makeText(aq.getContext(), "Unknown Error", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
